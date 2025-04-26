@@ -1,0 +1,374 @@
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { motion } from 'framer-motion';
+import {
+    Github,
+    Linkedin,
+    Mail,
+    User,
+    Code,
+    Zap,
+    LayoutDashboard,
+    MessageSquare,
+    CheckCircle2,
+    Briefcase,
+    Smartphone,
+    Figma
+} from 'lucide-react';
+import { cn } from "@/lib/utils"
+
+// Animation variants
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            delayChildren: 0.3,
+            staggerChildren: 0.2
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+        y: 0,
+        opacity: 1
+    }
+};
+
+// --- Helper Components ---
+
+// Reusable IconLink component for social media links
+const IconLink = ({ href, icon: Icon, name }: { href: string, icon: React.FC<React.SVGProps<SVGSVGElement>>, name: string }) => (
+    <motion.a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-white transition-colors duration-300"
+        variants={itemVariants}
+        aria-label={name} // Add aria-label for accessibility
+    >
+        <Icon className="w-6 h-6" />
+    </motion.a>
+);
+
+// Reusable SectionTitle component for consistent section headings
+const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+    <motion.h2
+        className="text-3xl font-bold text-white mb-8 text-center"
+        variants={itemVariants}
+    >
+        {children}
+    </motion.h2>
+);
+
+// Reusable ProjectCard component to display project information
+const ProjectCard = ({
+    title,
+    description,
+    link,
+    technologies,
+    index
+}: {
+    title: string,
+    description: string,
+    link: string,
+    technologies: string[],
+    index: number
+}) => {
+    const bgColors = [
+        'bg-gradient-to-r from-purple-500/10 to-blue-500/10',
+        'bg-gradient-to-r from-pink-500/10 to-yellow-500/10',
+        'bg-gradient-to-r from-green-500/10 to-teal-500/10',
+    ];
+
+    return (
+        <motion.div
+            className={cn(
+                "rounded-xl p-6 shadow-lg transition-all duration-300 hover:scale-[1.02]",
+                "border border-white/10",
+                bgColors[index % bgColors.length] // Cycle through background colors
+            )}
+            variants={itemVariants}
+        >
+            <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
+            <p className="text-gray-400 mb-4">{description}</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+                {technologies.map((tech, index) => (
+                    <span
+                        key={index}
+                        className="bg-white/20 text-xs text-gray-300 px-2 py-1 rounded-full"
+                    >
+                        {tech}
+                    </span>
+                ))}
+            </div>
+            <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors duration-200 inline-flex items-center gap-1"
+            >
+                View Project <Code className="w-4 h-4" />
+            </a>
+        </motion.div>
+    );
+};
+
+// Reusable SkillBadge component for displaying individual skills
+const SkillBadge = ({ skill, icon: Icon }: { skill: string, icon?: React.FC<React.SVGProps<SVGSVGElement>> }) => (
+    <motion.span
+        className="bg-white/10 text-gray-300 px-4 py-2 rounded-full flex items-center gap-2"
+        variants={itemVariants}
+    >
+        {Icon && <Icon className="w-4 h-4" />}
+        {skill}
+    </motion.span>
+);
+
+// --- Main Component ---
+
+const Portfolio = () => {
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormErrors({ ...formErrors, [e.target.name]: '' }); // Clear error on change
+    };
+
+    const validateForm = () => {
+        let errors: { [key: string]: string } = {};
+        let isValid = true;
+
+        if (!formData.name.trim()) {
+            errors.name = 'Name is required';
+            isValid = false;
+        }
+        if (!formData.email.trim()) {
+            errors.email = 'Email is required';
+            isValid = false;
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email)) {
+            errors.email = 'Invalid email address';
+            isValid = false;
+        }
+        if (!formData.message.trim()) {
+            errors.message = 'Message is required';
+            isValid = false;
+        }
+
+        setFormErrors(errors);
+        return isValid;
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (validateForm()) {
+            // Simulate form submission
+            console.log(formData); // Replace with actual submission logic (e.g., API call)
+            setIsSubmitted(true);
+            setFormData({ name: '', email: '', message: '' }); // Clear form
+            // Reset submission status after a few seconds
+            setTimeout(() => setIsSubmitted(false), 5000);
+        }
+    };
+
+    return (
+        <div className="bg-gray-900 min-h-screen">
+            <header className="py-6 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    <h1 className="text-2xl font-bold text-white">
+                        <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                            Your Name
+                        </span>
+                    </h1>
+                    <nav>
+                        <ul className="flex space-x-6">
+                            <li><a href="#about" className="text-gray-400 hover:text-white transition-colors duration-300">About</a></li>
+                            <li><a href="#skills" className="text-gray-400 hover:text-white transition-colors duration-300">Skills</a></li>
+                            <li><a href="#projects" className="text-gray-400 hover:text-white transition-colors duration-300">Projects</a></li>
+                            <li><a href="#contact" className="text-gray-400 hover:text-white transition-colors duration-300">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+
+            <main className="px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    className="max-w-7xl mx-auto space-y-16"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    {/* About Section */}
+                    <section id="about" className="py-16">
+                        <SectionTitle>About Me</SectionTitle>
+                        <motion.div className="flex flex-col md:flex-row items-center gap-12" variants={itemVariants}>
+                            <div className="md:w-1/3">
+                                <img
+                                    src="https://source.unsplash.com/random/400x400/?portrait" // Replace with actual image URL
+                                    alt="Your Name"
+                                    className="rounded-full shadow-lg border border-white/10"
+                                />
+                            </div>
+                            <div className="md:w-2/3 text-gray-300 leading-relaxed">
+                                <p className="mb-4">
+                                    Hello! I'm [Your Name], a passionate [Your Profession] with a strong
+                                    background in [Your Background]. I love creating [What you create]
+                                    and I'm always eager to learn new technologies.
+                                </p>
+                                <p className="mb-4">
+                                    My goal is to use my skills to develop innovative and impactful
+                                    solutions. I'm particularly interested in [Your Interests].
+                                </p>
+                                <p>
+                                    When I'm not working, you can find me [Your Hobbies].
+                                </p>
+                            </div>
+                        </motion.div>
+                    </section>
+
+                    {/* Skills Section */}
+                    <section id="skills" className="py-16">
+                        <SectionTitle>Skills</SectionTitle>
+                        <motion.div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" variants={itemVariants}>
+                            <SkillBadge skill="JavaScript" icon={Zap} />
+                            <SkillBadge skill="React" icon={Code} />
+                            <SkillBadge skill="Next.js" icon={LayoutDashboard} />
+                            <SkillBadge skill="Tailwind CSS" icon={Zap} />
+                            <SkillBadge skill="Figma" icon={Figma} />
+                            <SkillBadge skill="UI/UX Design" />
+                            <SkillBadge skill="Problem Solving" />
+                            <SkillBadge skill="Communication" icon={MessageSquare} />
+                            <SkillBadge skill="Teamwork" icon={User} />
+                            <SkillBadge skill="Responsive Design" icon={Smartphone} />
+                            <SkillBadge skill="TypeScript" />
+                            <SkillBadge skill="Node.js" />
+                        </motion.div>
+                    </section>
+
+                    {/* Projects Section */}
+                    <section id="projects" className="py-16">
+                        <SectionTitle>Projects</SectionTitle>
+                        <motion.div
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                            variants={containerVariants}
+                        >
+                            <ProjectCard
+                                title="Project 1: E-commerce Website"
+                                description="Developed a full-stack e-commerce platform with user authentication, product browsing, shopping cart, and checkout functionality."
+                                link="#" // Replace with actual link
+                                technologies={['React', 'Node.js', 'Express', 'PostgreSQL']}
+                                index={0}
+                            />
+                            <ProjectCard
+                                title="Project 2: Data Visualization Dashboard"
+                                description="Created an interactive dashboard to visualize complex data using charts and graphs.  Includes filtering and export features."
+                                link="#" // Replace with actual link
+                                technologies={['React', 'D3.js', 'Tailwind CSS']}
+                                index={1}
+                            />
+                            <ProjectCard
+                                title="Project 3: Mobile Task Manager"
+                                description="Built a mobile app to help users manage their tasks and schedules, with features like reminders, categories, and progress tracking."
+                                link="#" // Replace with actual link
+                                technologies={['React Native', 'Firebase']}
+                                index={2}
+                            />
+                            <ProjectCard
+                                title="Project 4: Portfolio Website"
+                                description="Designed and developed a personal portfolio website to showcase skills, projects, and experience."
+                                link="#"
+                                technologies={['Next.js', 'Tailwind CSS', 'Framer Motion']}
+                                index={3}
+                            />
+                        </motion.div>
+                    </section>
+
+                    {/* Contact Section */}
+                    <section id="contact" className="py-16">
+                        <SectionTitle>Contact Me</SectionTitle>
+                        <motion.div className="max-w-md mx-auto" variants={itemVariants}>
+                            {isSubmitted ? (
+                                <div className="bg-green-500/20 text-green-400 p-4 rounded-md border border-green-500/30 flex items-center gap-2">
+                                    <CheckCircle2 className="w-5 h-5" />
+                                    <p>Thank you! Your message has been sent.</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div>
+                                        <label htmlFor="name" className="block text-sm font-medium text-gray-300">Name</label>
+                                        <Input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            placeholder="Your Name"
+                                            className="mt-1 bg-black/20 text-white border-gray-700"
+                                            error={!!formErrors.name}
+                                        />
+                                        {formErrors.name && <p className="text-red-400 text-sm mt-1">{formErrors.name}</p>}
+                                    </div>
+                                    <div>
+                                        <label htmlFor="email" className="block text-sm font-medium text-gray-300">Email</label>
+                                        <Input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            placeholder="you@example.com"
+                                            className="mt-1 bg-black/20 text-white border-gray-700"
+                                            error={!!formErrors.email}
+                                        />
+                                        {formErrors.email && <p className="text-red-400 text-sm mt-1">{formErrors.email}</p>}
+                                    </div>
+                                    <div>
+                                        <label htmlFor="message" className="block text-sm font-medium text-gray-300">Message</label>
+                                        <Textarea
+                                            id="message"
+                                            name="message"
+                                            value={formData.message}
+                                            onChange={handleChange}
+                                            rows={4}
+                                            placeholder="Your message..."
+                                            className="mt-1 bg-black/20 text-white border-gray-700 resize-none"
+                                            error={!!formErrors.message}
+                                        />
+                                        {formErrors.message && <p className="text-red-400 text-sm mt-1">{formErrors.message}</p>}
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white
+                                                 hover:from-blue-600 hover:to-purple-600 transition-colors duration-300
+                                                 py-3"
+                                    >
+                                        Send Message
+                                    </Button>
+                                </form>
+                            )}
+                        </motion.div>
+                    </section>
+                </motion.div>
+            </main>
+
+            <footer className="py-8 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-gray-400 text-sm">
+                    <p>© {new Date().getFullYear()} Your Name. All rights reserved.</p>
+                    <div className="flex space-x-6 mt-4 md:mt-0">
+                        <IconLink href="https://github.com" icon={Github} name="GitHub" /> {/* Replace with actual links */}
+                        <IconLink href="https://linkedin.com" icon={Linkedin} name="LinkedIn" />
+                        <IconLink href="mailto:your.email@example.com" icon={Mail} name="Email" />
+                    </div>
+                </div>
+            </footer>
+        </div>
+    );
+};
+
+export default Portfolio;
